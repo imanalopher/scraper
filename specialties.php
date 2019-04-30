@@ -60,7 +60,7 @@ foreach($jsonProviders as $providerItem) {
                 }
 
                 if (!is_null($value)) {
-                    $provider = $em->getRepository(Provider::class)->find($providerId);
+                    $provider = $em->getRepository(Provider::class)->findOneBy(['providerId' => $providerId]);
                     $specialities = new Specialties();
                     $specialities->setProvider($provider);
                     $specialities->setSpecialty($value);
