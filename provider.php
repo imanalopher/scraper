@@ -113,6 +113,7 @@ foreach ($jsonProviders as $providerItem) {
                 break;
         }
     }
+    $provider->setProviderId(explode("/", $href)[4]);
 
     $em->persist($provider);
     $em->flush();
