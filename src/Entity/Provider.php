@@ -2,16 +2,26 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
 
 /**
  * Class Provider
  *
  * @ORM\Entity()
- * @ORM\Table(name="provider")
+ * @ORM\Table(name="provider", indexes={
+ *      @ORM\Index(name="provider_id_idx", columns={"provider_id"}),
+ *      @ORM\Index(name="search_idx", columns={"first_name", "last_name"})
+ * })
  */
 class Provider extends Entity
 {
+    /**
+     * @var integer
+     * @ORM\Column(name="provider_id", type="integer", nullable=false)
+     */
+    private $providerId;
+
     /**
      * @var string
      * @ORM\Column(name="first_name", type="string", nullable=true)
@@ -78,14 +88,38 @@ class Provider extends Entity
      */
     private $timezone;
 
+    /**
+     * @var Specialties[]
+     *
+     * @ORM\OneToMany(targetEntity="Specialties", mappedBy="provider")
+     */
+    private $specialties;
+
     public function __construct()
     {
+        $this->specialties = new ArrayCollection();
         $this->mailingAddress = [];
     }
 
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProviderId()
+    {
+        return $this->providerId;
+    }
+
+    /**
+     * @param int $providerId
+     */
+    public function setProviderId(int $providerId)
+    {
+        $this->providerId = $providerId;
     }
 
     /**
