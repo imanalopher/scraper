@@ -44,38 +44,47 @@ foreach($jsonProviders as $providerItem) {
 
     echo "User Id = " . $providerId . "\n";
 
-    $specialitiesUrl = $_ENV['BASE_URL'] . "/admin/user_management/persona_saas/$providerId/specialties";
+    $provider = $em->getRepository(Provider::class)->findOneBy(['providerId' => $providerId]);
+    $specialities = null;
+    if ($provider instanceof Provider) {
+        $specialities = $em->getRepository(Specialties::class)->findOneBy(['provider' => $provider->getId()]);
+    }
 
-    $resultSpecialities = $web->Process($specialitiesUrl);
-    if ($resultSpecialities["response"]["code"] === "200" && $resultSpecialities['success']) {
-        $specialitiesForm = $resultSpecialities['forms'][0];
-        foreach($specialitiesForm->fields as $field) {
-            $value = null;
-            if($field['id'] && strpos($field['name'], 'member_speciality') !== false) {
-                if ($field['type'] === 'select') {
-                    $value = $field['options'][$field['value']];
-                } elseif ($field['type'] === 'input.checkbox' && $field['checked']) {
-                    $crawler = new Crawler($field['hint']);
-                    $value = $crawler->getNode(0)->textContent;
-                }
+    if (!$specialities instanceof Specialties) {
 
-                if (!is_null($value)) {
-                    $provider = $em->getRepository(Provider::class)->findOneBy(['providerId' => $providerId]);
-                    $specialities = new Specialties();
-                    $specialities->setProvider($provider);
-                    $specialities->setSpecialty($value);
+        $specialitiesUrl = $_ENV['BASE_URL'] . "/admin/user_management/persona_saas/$providerId/specialties";
 
-                    $em->persist($specialities);
-                    $em->flush();
+        $resultSpecialities = $web->Process($specialitiesUrl);
+        if ($resultSpecialities["response"]["code"] === "200" && $resultSpecialities['success']) {
+            $specialitiesForm = $resultSpecialities['forms'][0];
+            foreach ($specialitiesForm->fields as $field) {
+                $value = null;
+                if ($field['id'] && strpos($field['name'], 'member_speciality') !== false) {
+                    if ($field['type'] === 'select') {
+                        $value = $field['options'][$field['value']];
+                    } elseif ($field['type'] === 'input.checkbox' && $field['checked']) {
+                        $crawler = new Crawler($field['hint']);
+                        $value = $crawler->getNode(0)->textContent;
+                    }
 
-                    echo $field['id'] . " = " . $value . "\n";
+                    if (!is_null($value)) {
+                        $provider = $em->getRepository(Provider::class)->findOneBy(['providerId' => $providerId]);
+                        $specialities = new Specialties();
+                        $specialities->setProvider($provider);
+                        $specialities->setSpecialty($value);
 
-                    unset($specialities);
-                    unset($resultSpecialities);
+                        $em->persist($specialities);
+                        $em->flush();
+
+                        echo $field['id'] . " = " . $value . "\n";
+
+                        unset($specialities);
+                        unset($resultSpecialities);
+                    }
                 }
             }
         }
+        echo "\n\n";
+        sleep(2);
     }
-    echo "\n\n";
-    sleep(2);
 }
