@@ -95,6 +95,12 @@ class Provider extends Entity
      */
     private $specialties;
 
+    /**
+     * @var Avatar
+     * @ORM\OneToOne(targetEntity="Avatar", mappedBy="provider")
+     */
+    private $avatar;
+
     public function __construct()
     {
         $this->specialties = new ArrayCollection();
@@ -312,6 +318,22 @@ class Provider extends Entity
     public function setTimezone($timezone)
     {
         $this->timezone = $timezone;
+    }
+
+    /**
+     * @return Avatar
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    /**
+     * @param Avatar $avatar
+     */
+    public function setAvatar(Avatar $avatar)
+    {
+        $this->avatar = $avatar;
     }
 
 }
