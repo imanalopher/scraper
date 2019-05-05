@@ -34,7 +34,7 @@ class Avatar extends Entity
 
     /**
      * @var int
-     * @ORM\Column(name="status", type="integer", nullable=false)
+     * @ORM\Column(name="status", type="smallint", nullable=false)
      */
     private $status;
 
