@@ -54,6 +54,8 @@ foreach ($allJsonAdmins as $jsonAdmin) {
     $roles = explode(",", $roles);
     $admin->setRoles($roles);
 
+    echo $admin->getId() . " " . $admin->getName(). "\n";
+
     $em->persist($admin);
     $em->flush();
 
